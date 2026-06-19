@@ -23,12 +23,19 @@ module.exports = (io) => {
     // JOIN MEETING
     socket.on(
       "join-meeting",
-      (meetingId) => {
+      (data) => {
+
+        const meetingId =
+          typeof data === "string"
+            ? data
+            : data.meetingId;
+
+        if (!meetingId) return;
 
         socket.join(meetingId);
 
         console.log(
-          `Joined Meeting: ${meetingId}`
+          `Chat Joined Meeting: ${meetingId}`
         );
       }
     );

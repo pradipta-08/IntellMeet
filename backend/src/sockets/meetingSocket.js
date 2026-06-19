@@ -134,7 +134,7 @@ const syncDatabaseLeave = async (meetingId, userId, participantName, isLastParti
     if (isLastParticipant) {
       meetingDoc.status = "ended";
       meetingDoc.endTime = Date.now();
-      
+
       // Auto run AI summarisation
       await generateAIMeetingReportHelper(meetingObjectId, meetingDoc);
     }
@@ -158,6 +158,12 @@ const meetingSocket = (io) => {
         if (isRateLimited(socket.id)) return;
 
         const { meetingId, userId, name } = data || {};
+
+        console.log("JOIN DATA:", data);
+        console.log("meetingId:", meetingId);
+        console.log("userId:", userId);
+        console.log("name:", name);
+
         const cleanName = sanitiseString(name);
 
         if (!meetingId || !userId || !cleanName) {

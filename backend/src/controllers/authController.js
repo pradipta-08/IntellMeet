@@ -58,9 +58,16 @@ const signup = async (req,res) => {
 //Login
 const login = async (req,res) => {
     try {
+
         const { email, password } = req.body;
 
+        console.log("\n========== LOGIN REQUEST ==========");
+        console.log("Email:", email);
+        console.log("Password:", password);
+
         const user = await User.findOne({ email });
+
+        console.log("User Found:", !!user);
 
         if (!user) {
             return res.status(400).json({
@@ -68,37 +75,52 @@ const login = async (req,res) => {
                 message: "Invalid credentials",
             });
         }
-         const isMatch = await bcrypt.compare(password, user.password);
-        
-            if (!isMatch) {
-              return res.status(400).json({
+
+        console.log("DB Email:", user.email);
+        console.log("DB User ID:", user._id);
+
+        const isMatch = await bcrypt.compare(
+            password,
+            user.password
+        );
+
+        console.log("Password Match:", isMatch);
+
+        if (!isMatch) {
+            return res.status(400).json({
                 success: false,
                 message: "Invalid credentials",
-              });
-            }
-
-            const accessToken = generateAccessToken(user._id);
-            const refreshToken = generateRefreshToken(user._id);
-
-            user.refreshToken = refreshToken;
-
-            await user.save();
-
-            res.status(200).json({
-                success:true,
-                message: "Login Successfull",
-                accessToken,
-                refreshToken,
-                user: {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email,
-                },
             });
+        }
+
+        const accessToken = generateAccessToken(user._id);
+        const refreshToken = generateRefreshToken(user._id);
+
+        user.refreshToken = refreshToken;
+
+        await user.save();
+
+        console.log("LOGIN SUCCESS");
+
+        res.status(200).json({
+            success:true,
+            message:"Login Successful",
+            accessToken,
+            refreshToken,
+            user:{
+                id:user._id,
+                name:user.name,
+                email:user.email,
+            },
+        });
+
     } catch (error) {
+
+        console.log("LOGIN ERROR:", error);
+
         res.status(500).json({
-            success: false,
-            message: error.message,
+            success:false,
+            message:error.message,
         });
     }
 };

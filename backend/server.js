@@ -10,7 +10,7 @@ const chatSocket = require("./src/sockets/chatSocket");
 
 // ── DATABASE ──────────────────────────────────────────────────────────────────
 connectDB();
-connectRedis();
+//connectRedis();
 
 // ── HTTP SERVER ───────────────────────────────────────────────────────────────
 const server = http.createServer(app);

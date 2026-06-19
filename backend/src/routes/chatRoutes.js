@@ -12,6 +12,7 @@ const protect = require(
 
 router.get(
     "/:meetingId",
+    protect,
     getMeetingChats
 );
 
