@@ -28,7 +28,12 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app")
+      ) {
+        return callback(null, true);
+      }
       callback(new Error(`CORS: origin ${origin} not allowed`));
     },
     credentials: true,
@@ -45,15 +50,15 @@ app.use(cookieParser());
 // ── SANITISE MONGO OPERATORS FROM BODY/QUERY ─────────────────────────────────
 // Prevents NoSQL injection attacks like { "$gt": "" } in login fields
 app.use((req, res, next) => {
-   if (req.query) {
-      Object.defineProperty(req, 'query', {
-         value: req.query,
-         writable: true,
-         configurable: true,
-         enumerable: true,
-      });
-   }
-   next();
+  if (req.query) {
+    Object.defineProperty(req, 'query', {
+      value: req.query,
+      writable: true,
+      configurable: true,
+      enumerable: true,
+    });
+  }
+  next();
 });
 
 app.use(mongoSanitize());
